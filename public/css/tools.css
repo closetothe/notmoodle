@@ -125,6 +125,13 @@ textarea {
     display: none !important;
 }
 
+.centered{
+    text-align: center;
+}
+
+.centered2{
+    margin: 0 auto;
+}
 /*
  * Hide only visually, but have it available for screen readers:
  * https://snook.ca/archives/html_and_css/hiding-content-for-accessibility
