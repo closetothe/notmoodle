@@ -16,6 +16,9 @@ body{
 	padding-bottom: 12%;
 }
 
+.post-btn{
+	float: right;
+}
 
 .bg-white{
 	background-color: white;	

@@ -1,48 +1,39 @@
 <% include ./partials/header %>
 <link rel="stylesheet" type="text/css" href="/css/thread.css">
 
+<div id="metadata" thread-id=<%=thread._id%>> </div>
+
 <div class = "container" id="thread-container">
 	<h1 id="thread-title">How do I compile?</h1>
 
-	<div class = "post-box initial" id="unvhd9gy6dr79o">
+	<div class = "post-box increment-0 initial" id=<%=initial._id%>>
+		<div class = "post-details">
+			<% var date0 = new Date(initial.timestamp)%>
+			<p><span class="post-author"><%=initial.author%></span> <span class="post-date"><%=date0.toUTCString()%></span></p>
+		</div>
+		<hr>
+		<div class = "post-body">
+			<%- initial.body %>
+		</div>
+		<button class="post-btn btn btn-outline-dark btn-sm permalink">Permalink</button>
+		<button class="post-btn btn btn-dark btn-sm reply">Reply</button>
+	</div>
+	<div id=<%="reply-" + initial._id %> class="increment-0">
+	</div>
+
+	<div class = "post-box increment-1" parent="unvhd9gy6dr79o" id="aaa3">
 		<div class = "post-details">
 			<p><span class="post-author">Jibbly Jones</span> <span class="post-date">22 Sept 2018</span></p>
 		</div>
 		<hr>
 		<div class = "post-body">
-
-			<p>I really can't figure out how to compile...</p>
-
-		</div>
-		<button class="btn btn-dark btn-sm permalink">Permalink</button>
-		<button class="btn btn-dark btn-sm">Reply</button>
-	</div>
-
-	<div class = "reply-box">
-		<h1>Reply</h1>
-		<p id="error" class="not-red" hidden><em>You must enter all the fields!</em></p>
-		<form action="/post" method="POST">
-		    <div class="form-group">
-		      <input type="text" id="title-box" name="title" class="form-control" placeholder="Title">
-		    </div>
-		    <div class="form-row">
-			    <div class="col">
-			      <input type="text" id="name-box" name="user" class="form-control" placeholder="Your Name">
-			    </div>
-			    <div class="col">
-			      <input type="email" id = "email-box" name = "content" class="form-control" placeholder="(Optional) Email notification">
-			    </div>
-		    </div>
-	  	</form>
 		
-		<div id="quill-container" class="bg-white">
-			<div id="toolbar" class="border-top"></div>
-			<div id="editor" class="border-bottom">
-			<p>Enter text here! <em>Use the &lt;/&gt; feature for code snippets.</em></p>
-			</div>
 		</div>
-		<button id="submit" class="btn btn-dark">Submit</button>
-
+		<button class="post-btn btn btn-outline-dark btn-sm permalink">Permalink</button>
+		<button class="post-btn btn btn-outline-dark btn-sm parent">Parent</button>
+		<button class="post-btn btn btn-dark btn-sm reply">Reply</button>
+	</div>
+	<div id="reply-aaa3" class="increment-1">
 	</div>
 
 </div>

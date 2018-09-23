@@ -12,13 +12,14 @@ var postSchema = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Post"
                 }], required: false},
-  child: {type: [{
+  children: {type: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Post"
                 }], required: false},
-  user: {type: String, required: true},
+  author: {type: String, required: true},
   body: {type: String, required: true},
   admin: {type: Boolean, required: true},
+  email: {type: String, required: false},
   timestamp: {
         type: Date,
         // `Date.now()` returns the current unix timestamp as a number

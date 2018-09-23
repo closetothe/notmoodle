@@ -4,11 +4,14 @@ var mongoose = require("mongoose");
 // Post
 
 var threadSchema = new mongoose.Schema({
-  title: String,
+  title: {type: String, required: true},
+  responses: Number,
+  author: String,
+  timestamp: Date,
   initializer: {type: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Post"
                 }], required: true}
-});
+  });
 
 module.exports = mongoose.model("Thread", threadSchema);

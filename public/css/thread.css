@@ -1,21 +1,28 @@
 #thread-title{
-	font-size: 1.6em;
+	font-size: 1.65em;
 }
 
 #thread-container{
 	padding-top: 5%;
-	padding-bottom: 10%;
+	padding-bottom: 38%;
 }
 
 #quill-container{
 	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
+#editor{
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
 
 .post-box{
 	border: solid grey 1px;
 	padding: 15px 12px 12px 12px;
 	border-radius: 5px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 
 .post-date{
@@ -31,14 +38,68 @@
 	color: grey;
 }
 
-.increment{
-	margin-left: 5%;
-}
-
 .reply-box{
 	border: solid lightgrey 1px;
-	padding: 15px 12px 12px 12px;
+	padding: 5px 12px 25px 12px;
 	border-radius: 5px;
 	max-width: 80%;
 }
+
+.reply-h1{
+	font-size: 1.55em;
+}
+
+
+#submit, .reply, .permalink, .parent{
+	margin-top: 5px;
+}
+
+#discard{
+	margin-left: 8px;
+	margin-top: 5px;
+}
+
+/*INCREMENTS*/
+
+
+.increment-1{
+	margin-left: 5%;
+}
+
+.increment-2{
+	margin-left: 10%;
+}
+
+.increment-3{
+	margin-left: 15%;
+}
+
+.increment-4{
+	margin-left: 20%;
+}
+
+.increment-5{
+	margin-left: 25%;
+}
+
+.increment-6{
+	margin-left: 30%;
+}
+
+.increment-7{
+	margin-left: 35%;
+}
+
+.increment-8{
+	margin-left: 40%;
+}
+
+.increment-9{
+	margin-left: 45%;
+}
+
+.increment-10{
+	margin-left: 50%;
+}
+
 

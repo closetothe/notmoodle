@@ -14,99 +14,27 @@
           <th>Date</th>
         </tr>
       <tbody>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
-        <tr class="list-item">
-          <td class="list-title" >Test post pls ignore</td>
-          <td class="list-author">Magic Johnson</td>
-          <td class="list-resp">0</td>
-          <td class="list-date">18 Sept 2018</td>          
-        </tr>
+
+        <% for (var i = 0; i < threads.length; i++) {%>
+        <% var date = new Date(threads[i].timestamp);%>
+        
+          <tr class="list-item">
+            <td class="list-title"><a class="thread-link" href=<%="/post/" + threads[i]._id%> ><%= threads[i].title %>
+            </a></td>
+            <td class="list-author"><%= threads[i].author %></td>
+            <td class="list-resp"><%= threads[i].responses %></td>
+            <td class="list-date"><%= date.toDateString() %></td>    
+               
+          </tr>
+        
+
+        <%}%>
+
       </tbody>
     </table>
 
   </div>
   
-<!--   <form action="/post" method="POST">
-
-    <div class="form-group">
-      <input type="text" name="title" class="form-control" placeholder="Title">
-    </div>
-    <div class="form-group">
-      <input type="text" name="user" class="form-control" placeholder="Your Name">
-    </div>
-    <div class="form-group">
-      <input type="text" name = "content" class="form-control" placeholder="Enter your post here...">
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-
-  </form> -->
-
-
 
   <!-- SCRIPTS -->
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>

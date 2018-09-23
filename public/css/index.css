@@ -14,6 +14,9 @@ body, .bg-nav{
 /*#1059f2*/ 
 /* #3d71f5*/
 
+.more-red{
+	color: #c85c04;
+}
 
 .not-red{
 	color: #fa8624;
@@ -49,22 +52,22 @@ table {
 	color: grey;
 }
 
-#email-link:hover{
+#email-link{
 	color: #0d70bc;	
 }
 
-#email-link:active{
+#email-link{
 	color: #075793;
 }
 
-.list-item{
+a.thread-link, .list-item{
 	color: #dceaf4;
 }
-.list-item:hover{
+a.thread-link:hover,  .list-item:hover{
 	color: #0d70bc;
 }
 
-.list-item:active{
+a.thread-link:active{
 	color: #075793;
 }
 

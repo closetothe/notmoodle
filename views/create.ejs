@@ -5,7 +5,8 @@
 
 <div class = "container centered" id="create-form">
 	<h1>Post Something</h1>
-	<p id="error" class="not-red" hidden><em>You must enter all the fields!</em></p>
+	<p id="error" class="more-red" hidden><em>You must enter all the fields!</em></p>
+	<p id="ajax-error" class="not-red" hidden>A server error occurred and I've been notified. Please try again later.</p>
 	<form action="/post" method="POST">
 	    <div class="form-group">
 	      <input type="text" id="title-box" name="title" class="form-control" placeholder="Title">
