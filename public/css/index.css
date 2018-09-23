@@ -1,0 +1,77 @@
+body{
+	min-height: 100%;
+}
+
+body, .bg-nav{
+	background-color: #dceaf4;
+}
+
+* {
+	font-family: 'Ubuntu', serif;
+	font-weight: 300;
+}
+
+/*#1059f2*/ 
+/* #3d71f5*/
+
+
+.not-red{
+	color: #fa8624;
+}
+.off-white{
+	color: #dceaf4;
+}
+.off-blue{
+	color: #b1cfe7;
+}
+
+table {
+  border: hidden;
+  border-collapse: collapse;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+
+#forum{
+	padding: 3% 3% 8% 3%;
+}
+/*#thread-box{
+		border: 1px solid grey;
+	border-radius: 8px;
+}*/
+
+.grey{
+	color: grey;
+}
+
+#email-link{
+	color: grey;
+}
+
+#email-link:hover{
+	color: #0d70bc;	
+}
+
+#email-link:active{
+	color: #075793;
+}
+
+.list-item{
+	color: #dceaf4;
+}
+.list-item:hover{
+	color: #0d70bc;
+}
+
+.list-item:active{
+	color: #075793;
+}
+
+
+#bottom-nav{
+	width: 100%;
+	padding: 15px 10px 3px 10px;
+	background-color: #212529;
+}
+

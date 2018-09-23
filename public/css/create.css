@@ -1,0 +1,22 @@
+body{
+	background-color: #dceaf4;
+}
+
+#quill-container{
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+#editor{
+	padding: 8px 8px 8px 8px;
+}
+
+#create-form{
+	padding-top: 2%;
+	padding-bottom: 12%;
+}
+
+
+.bg-white{
+	background-color: white;	
+}
