@@ -38,7 +38,7 @@
 	color: grey;
 }
 
-.reply-box{
+.reply-box, .edit-box{
 	border: solid lightgrey 1px;
 	padding: 5px 12px 25px 12px;
 	border-radius: 5px;
@@ -50,7 +50,7 @@
 }
 
 
-#submit, .reply, .permalink, .parent{
+#submit, .reply, .permalink, .parent, .edit, .delete, #submit-edit, .you-sure, .cancel{
 	margin-top: 5px;
 }
 

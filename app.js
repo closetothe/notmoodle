@@ -59,6 +59,7 @@ app.post('/mech215/create', function(req, res) {
 	var newPost = {};
 	newPost.thread = [];
 	newPost.children = [];
+	newPost.parent = [];
 	newPost.author = req.body.author;
 	newPost.body = req.body.content;
 	newPost.admin = false;
@@ -178,6 +179,75 @@ app.post('/reply', function(req, res) {
 
 });
 
+app.post("/post/delete/:id", (req, res)=>{
+	console.log(req.params.id);
+	Post.findById(req.params.id)
+		.then( post => {
+			
+			if (post.children == [] && ( post.parent == [] || !post.parent || post.parent == null )){
+				post.remove()
+					.then(()=>{
+						console.log("Deleted post " + post._id);
+						res.send("success");
+					})
+					.catch( err => {
+						console.log(err);
+						res.send("error");
+					})
+			}
+			else {
+				updatePost(post._id,"[deleted]", "[deleted]")
+					 .then( () => {
+					 	console.log("Deleted post " + post._id);
+						res.send("success");
+					 })
+					 .catch( err => {
+					 	console.log(err);
+						res.send("error");
+					 })
+			}
+		})
+		.catch( err => {
+			console.log(err);
+			res.send("404");
+		})
+})
+
+app.post("/post/update/:id", (req, res)=>{
+	updatePost(req.params.id, req.body.author, req.body.message)
+		.then(()=>{
+			res.send("success");
+		})
+		.catch((err)=>{
+			console.log(err);
+			res.send("error");
+		})
+})
+
+app.post("/thread/delete/:id", (req, res)=>{
+	Thread.findById(req.params.id)
+		  .then(post => {
+		  	post.remove()
+		  		.then(()=>{
+		  			res.redirect("/mech215");
+		  		})
+		  		.catch((err)=>{
+		  			console.log(err)
+		  			res.redirect("/error");
+		  		})
+		  })
+		  .catch((err)=>{
+		  	console.log(err);
+		  	res.redirect("/404");
+		  })
+})
+
+
+app.get("/login", (req, res)=>{
+	res.render("login");
+})
+
+
 app.get('*', function(req, res) {
 	res.render("404");
 });
@@ -202,8 +272,12 @@ function updateResponses(id){
 
 
 var getPostPriority = async function(nodeRef, array){
-
-	var node = await Post.findById(nodeRef)
+	try {
+		var node = await Post.findById(nodeRef)
+	}
+	catch (err) {
+		return Promise.reject(err)
+	}
 	array.push(node);
 		// console.log(children);
 	var len = node.children.length;
@@ -213,7 +287,26 @@ var getPostPriority = async function(nodeRef, array){
 	return array;	
 }
 
-
+var updatePost = async function (id, author, message){
+	Post.findById(id)
+		.then( post => {
+			post.author = author;
+			post.body = message;
+			post.save()
+				.then(()=>{
+					console.log("Updated post " + post._id);
+					//console.log(post);
+					return true;
+				})
+				.catch( (err) => {
+					throw err;
+				})
+		})
+		.catch( err => {
+			console.log("Failed to update post " + id, err)
+			return Promise.reject(err);
+		})
+}
 
 function sendMail(post){
 	// send that shit
