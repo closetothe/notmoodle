@@ -120,7 +120,7 @@ app.get('/post/:id', function(req, res) {
 		else {
 			getPostPriority(thread.initializer[0], [])
 				.then((priority)=>{
-					res.render("thread", {priority: priority});
+					res.render("thread", {title:thread.title, priority: priority});
 				})
 				.catch( err => {
 					console.log(err);
@@ -212,8 +212,6 @@ var getPostPriority = async function(nodeRef, array){
 	}
 	return array;	
 }
-
-getPostPriority("5ba74bb9f41510b478b684c6", []).then((arr)=>console.log(arr));
 
 
 
