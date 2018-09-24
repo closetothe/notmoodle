@@ -83,11 +83,15 @@ $("#thread-container").on("click", "#submit", function(){
 				window.location.replace("/post/"+threadId+"#"+resp.id);
 				location.reload();
 			}
+			else if (resp == "auth"){
+				showError();
+			}
 			else {
 				var info = "";
+				$("#submit").attr("disabled",false);
 				if(resp.details) info = resp.details;
 				ajaxError(info);
-				window.location.replace("/error");
+				// window.location.replace("/error");
 			}
 		})
 
@@ -95,6 +99,7 @@ $("#thread-container").on("click", "#submit", function(){
 		
 	}
 	else{
+		$("#submit").attr("disabled",false);
 		showError();
 	}
 })
@@ -119,9 +124,10 @@ $("#thread-container").on("click", "#submit-edit", function(){
 			}
 			else {
 				var info = "";
+				$("#submit").attr("disabled",false);
 				if(resp.details) info = resp.details;
 				ajaxError(info);
-				window.location.replace("/error");
+				// window.location.replace("/error");
 			}
 		})
 
