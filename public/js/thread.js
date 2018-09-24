@@ -25,6 +25,7 @@ $("#thread-container").on("click", "#discard", function(){
 })
 
 $("#thread-container").on("click", "#submit", function(){
+	$("#submit").attr("disabled",true);
 	var nameBox = $("#name-box");
 	var emailBox = $("#email-box");
 	var parent = $(this).parent().parent().attr('id').split('-')[1];
@@ -46,7 +47,8 @@ $("#thread-container").on("click", "#submit", function(){
 
 		$.post("/reply", postData, function(resp){
 			if (resp.status === "success"){
-				window.location.replace(url + "#" + resp.id);
+				window.location.replace("/post/"+threadId+"#"+resp.id);
+				location.reload();
 			}
 			else {
 				var info = "";

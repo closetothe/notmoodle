@@ -20,6 +20,7 @@ var postSchema = new mongoose.Schema({
   body: {type: String, required: true},
   admin: {type: Boolean, required: true},
   email: {type: String, required: false},
+  depth: Number,
   timestamp: {
         type: Date,
         // `Date.now()` returns the current unix timestamp as a number

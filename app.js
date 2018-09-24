@@ -3,9 +3,10 @@
 // Dependencies
 
 var express = require("express"),
-	compression = require('compression'),
+	compression = require("compression"),
 	bodyParser = require("body-parser"),
-	mongoose = require("mongoose");
+	mongoose = require("mongoose"),
+	async = require("async");
 
 
 var app = express();
@@ -61,6 +62,7 @@ app.post('/mech215/create', function(req, res) {
 	newPost.author = req.body.author;
 	newPost.body = req.body.content;
 	newPost.admin = false;
+	newPost.depth = 0;
 
 	if (req.body.email){
 		newPost.email = req.body.email;
@@ -116,15 +118,14 @@ app.get('/post/:id', function(req, res) {
 			res.redirect("/404");
 		}
 		else {
-			Post.findById(thread.initializer[0], function(err, post){
-				if (err) {
+			getPostPriority(thread.initializer[0], [])
+				.then((priority)=>{
+					res.render("thread", {priority: priority});
+				})
+				.catch( err => {
 					console.log(err);
 					res.redirect("/");
-				}
-				else {
-					res.render("thread", {thread: thread, initial: post});
-				}
-			})
+				})
 		}
 	})
 });
@@ -152,11 +153,16 @@ app.post('/reply', function(req, res) {
 				parentPost.children.push(post);
 				parentPost.save()
 						  .then( ()=> {
-						  	resp.status="success"
-						  	resp.id = post._id;
-						  	res.send(resp)
-						  	updateResponses(newPost.thread);
-						  	sendMail(parentPost);
+						  	post.depth = parentPost.depth + 1;
+						  	post.save()
+						  		.then( ()=> {
+						  			resp.status="success"
+								  	resp.id = post._id;
+								  	res.send(resp)
+								  	updateResponses(newPost.thread);
+								  	sendMail(parentPost);
+						  		})
+						  		.catch( err => {throw err});
 						  })
 						  .catch( err => {throw err})
 			})
@@ -193,6 +199,23 @@ function updateResponses(id){
 		}
 	})
 }
+
+
+var getPostPriority = async function(nodeRef, array){
+
+	var node = await Post.findById(nodeRef)
+	array.push(node);
+		// console.log(children);
+	var len = node.children.length;
+	for(var i = 0; i < len; i++){
+		await getPostPriority(node.children[i], array);
+	}
+	return array;	
+}
+
+getPostPriority("5ba74bb9f41510b478b684c6", []).then((arr)=>console.log(arr));
+
+
 
 function sendMail(post){
 	// send that shit

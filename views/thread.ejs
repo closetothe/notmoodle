@@ -1,40 +1,46 @@
 <% include ./partials/header %>
 <link rel="stylesheet" type="text/css" href="/css/thread.css">
 
-<div id="metadata" thread-id=<%=thread._id%>> </div>
+<div id="metadata" thread-id=<%=priority[0].thread[0]._id%>> </div>
 
 <div class = "container" id="thread-container">
 	<h1 id="thread-title">How do I compile?</h1>
 
-	<div class = "post-box increment-0 initial" id=<%=initial._id%>>
+	<div class = "post-box increment-0 initial" id=<%=priority[0]._id%>>
 		<div class = "post-details">
-			<% var date0 = new Date(initial.timestamp)%>
-			<p><span class="post-author"><%=initial.author%></span> <span class="post-date"><%=date0.toUTCString()%></span></p>
+			<% var date0 = new Date(priority[0].timestamp)%>
+			<p><span class="post-author"><%=priority[0].author%></span> <span class="post-date"><%=date0.toUTCString();%></span></p>
 		</div>
 		<hr>
 		<div class = "post-body">
-			<%- initial.body %>
+			<%- priority[0].body %>
 		</div>
 		<button class="post-btn btn btn-outline-dark btn-sm permalink">Permalink</button>
 		<button class="post-btn btn btn-dark btn-sm reply">Reply</button>
-	</div>
-	<div id=<%="reply-" + initial._id %> class="increment-0">
 	</div>
 
-	<div class = "post-box increment-1" parent="unvhd9gy6dr79o" id="aaa3">
-		<div class = "post-details">
-			<p><span class="post-author">Jibbly Jones</span> <span class="post-date">22 Sept 2018</span></p>
+	<div id=<%="reply-" + priority[0]._id %> class="increment-0"></div>
+
+	<% for (var i=1; i < priority.length; i++) {%>
+	<% var date = new Date(priority[i].timestamp) %>
+	<% var depth = 10;%>
+	<% if (priority[i].depth < 10) depth = priority[i].depth%>
+
+		<div class="<%='increment-' + depth + ' post-box'%>" parent=<%=priority[i].parent[0]%> id=<%=priority[i]._id%>>
+			<div class = "post-details">
+				<p><span class="post-author"><%=priority[i].author%></span> <span class="post-date"><%=date.toUTCString();%></span></p>
+			</div>
+			<hr>
+			<div class = "post-body">
+			<%-priority[i].body%>
+			</div>
+			<button class="post-btn btn btn-outline-dark btn-sm permalink">Permalink</button>
+			<button class="post-btn btn btn-outline-dark btn-sm parent">Parent</button>
+			<button class="post-btn btn btn-dark btn-sm reply">Reply</button>
 		</div>
-		<hr>
-		<div class = "post-body">
-		
-		</div>
-		<button class="post-btn btn btn-outline-dark btn-sm permalink">Permalink</button>
-		<button class="post-btn btn btn-outline-dark btn-sm parent">Parent</button>
-		<button class="post-btn btn btn-dark btn-sm reply">Reply</button>
-	</div>
-	<div id="reply-aaa3" class="increment-1">
-	</div>
+		<div id=<%="reply-" + priority[i]._id%> class=<%="increment-" + depth%>> </div>
+	<%}%>
+	
 
 </div>
 

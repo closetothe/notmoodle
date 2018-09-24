@@ -1,0 +1,46 @@
+
+var mega = {};
+mega.childNodes = [{childNodes: [{childNodes: []}, {childNodes: []}]}, 
+				   {childNodes: [{childNodes: []}, {childNodes: []}]}, 
+				   {childNodes: [{childNodes: []}, {childNodes: []}]}]
+
+var result = [];
+
+function recurse(node) {
+	if (node.childNodes.length > 0){
+		for(var i = 0, leaves = node.childNodes; i < leaves.length; i++) {
+			result.push(leaves[i]);
+			recurse(leaves[i]);
+		}
+	}
+	else {
+		console.log(result);		
+	}
+}
+
+recurse(mega);
+
+// function iterate(current) {
+//     var children = current.childNodes;
+//     return new Promise((resolve, reject)=>{
+//     try{
+// 		if (children.length == 0) console.log("0");
+// 	    for (var i = 0; i < children.length; i++) {
+// 	    	depth++;
+// 	        iterate(children[i]);
+// 	    }
+// 	    result.push(array);
+// 	    resolve(array);
+//     }
+//     catch (error) {
+//     	reject(error);
+//     }
+//     })
+// }
+
+
+
+
+
+
+
