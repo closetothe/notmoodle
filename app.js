@@ -35,7 +35,7 @@ app.get('/mech215', function(req, res) {
 			console.log(err);
 			res.redirect("/404");
 		}
-		var threads = foundThreads;
+		var threads = foundThreads.reverse();
 		// console.log(threads);
 		res.render("index", {threads: threads});
 	});
