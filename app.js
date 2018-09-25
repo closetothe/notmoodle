@@ -1,6 +1,7 @@
 'use strict';
 
 // Dependencies
+const url = "https://notmoodle.com"
 
 var express = require("express"),
 	compression = require("compression"),
@@ -8,6 +9,9 @@ var express = require("express"),
 	passport = require("passport"),
 	mongoose = require("mongoose"),
 	async = require("async");
+	
+
+var mailer = require("./mailtools");
 
 
 var app = express();
@@ -120,6 +124,7 @@ app.post('/mech215/create', function(req, res) {
 				  			console.log("Thread saved.");
 				  			resp.status = "success";
 				  			resp.id = thread._id;
+				  			mailer.postNotify(`${url}/post/${thread._id}`)
 				  			res.send(resp);
 				  		})
 				  		.catch(err => {
@@ -199,13 +204,17 @@ app.post('/reply', function(req, res) {
 						  		.then( ()=> {
 						  			resp.status="success"
 								  	resp.id = post._id;
-								  	try {res.send(resp)
+								  	updateResponses(newPost.thread);
+								  	mailer.postNotify(`${url}/post/${post.thread[0]}#${post._id}`, post.body, post.author)
+								  	if(parentPost.email)
+								  		mailer.replyNotify(parentPost.email, `${url}/post/${parentPost.thread[0]}#${parentPost._id}`, post.body, post.author)	
+								  	try {
+								  		res.send(resp)
 								  	}
 								  	catch (err) {
 								  		throw err;
 								  	}
-								  	updateResponses(newPost.thread);
-								  	sendMail(parentPost);
+								  	
 						  		})
 						  		.catch( err => {throw err});
 						  })
