@@ -56,7 +56,7 @@ module.exports = {
 																			to: ["mail.notmoodle@gmail.com"],
 																			subject: "Someone posted",
 																			html:  `
-																			<h2>Someone <a href=${permalink}>posted</a>:<\h2>
+																			<h2>Someone <a href=${permalink}>posted</a><\h2>
 																			<br>
 																			<p><strong>Name:</strong> ${who}<p> 
 																			<p><strong>Message:</strong><p> 

@@ -1,7 +1,7 @@
 'use strict';
 
 // Dependencies
-const url = "https://notmoodle.com"
+const url = "https://www.notmoodle.com"
 
 var express = require("express"),
 	compression = require("compression"),
