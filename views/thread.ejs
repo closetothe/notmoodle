@@ -9,7 +9,9 @@
 	<div class = "post-box increment-0 initial" id=<%=priority[0]._id%>>
 		<div class = "post-details">
 			<% var date0 = new Date(priority[0].timestamp)%>
-			<p><span class="post-author"><%=priority[0].author%></span> <span class="post-date"><%=date0.toUTCString();%></span></p>
+			<% var marked = "" %>
+        	<% if (priority[0].marked) marked = "marked" %>
+			<p><span class="<%='post-author ' + marked%>"><%=priority[0].author%></span> <span class="post-date"><%=date0.toUTCString();%></span></p>
 		</div>
 		<hr>
 		<div class = "post-body">
@@ -18,6 +20,7 @@
 		<button class="post-btn btn btn-outline-dark btn-sm permalink">Permalink</button>
 		<button class="post-btn btn btn-dark btn-sm reply">Reply</button>
 		<% if (user != "" && admin) {%>
+			<button class="post-btn btn btn-outline-primary btn-sm mark">Mark</button>
 			<button class="post-btn btn btn-outline-primary btn-sm edit">Edit</button>
 			<button class="post-btn btn btn-outline-danger btn-sm delete">Delete</button>
 			<button class="post-btn btn btn-outline-danger btn-sm cancel" hidden>Cancel</button>
@@ -30,11 +33,13 @@
 	<% for (var i=1; i < priority.length; i++) {%>
 	<% var date = new Date(priority[i].timestamp) %>
 	<% var depth = 10;%>
+	<% var mark = "" %>
+	<% if (priority[i].marked) mark = "marked" %>
 	<% if (priority[i].depth < 10) depth = priority[i].depth%>
 
 		<div class="<%='increment-' + depth + ' post-box'%>" parent=<%=priority[i].parent[0]%> id=<%=priority[i]._id%>>
 			<div class = "post-details">
-				<p><span class="post-author"><%=priority[i].author%></span> <span class="post-date"><%=date.toUTCString();%></span></p>
+				<p><span class="<%='post-author ' + mark%>"><%=priority[i].author%></span> <span class="post-date"><%=date.toUTCString();%></span></p>
 			</div>
 			<hr>
 			<div class = "post-body">
@@ -45,6 +50,7 @@
 			<button class="post-btn btn btn-dark btn-sm reply">Reply</button>
 			
 			<% if (user != "" && admin) {%>
+				<button class="post-btn btn btn-outline-primary btn-sm mark">Mark</button>
 				<button class="post-btn btn btn-outline-primary btn-sm edit">Edit</button>
 				<button class="post-btn btn btn-outline-danger btn-sm delete">Delete</button>
 				<button class="post-btn btn btn-outline-danger btn-sm cancel" hidden>Cancel</button>

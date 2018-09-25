@@ -50,7 +50,7 @@
 }
 
 
-#submit, .reply, .permalink, .parent, .edit, .delete, #submit-edit, .you-sure, .cancel{
+#submit, .reply, .permalink, .parent, .edit, .delete, #submit-edit, .you-sure, .cancel, .mark{
 	margin-top: 5px;
 }
 

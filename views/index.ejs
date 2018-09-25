@@ -3,7 +3,7 @@
 <!-- CONTENT -->
   <div class = "container centered" id="forum">
     <h1 class="">MECH 215: Introduction to C++</h1>
-    <p class="grey"><em>If you have off-topic questions, please email me at <a id="email-link" href="jamiel.nr@gmail.com">jamiel.nr@gmail.com</a></em></p>
+    <p class="grey"><em>If you have off-topic questions, please email me at <a id="email-link" href="mailto:jamiel.nr@gmail.com">jamiel.nr@gmail.com</a></em></p>
 
     <table class="table table-striped table-dark" id="thread-box">
       <thead class="thead-light"></thead>
@@ -12,23 +12,37 @@
           <th>Author</th>
           <th>Responses</th>
           <th>Date</th>
+          <% if (user != "" && admin) {%>
+          <th>Mark</th>
+          <th>Delete</th>
+          <% } %>
         </tr>
       <tbody>
 
         <% for (var i = 0; i < threads.length; i++) {%>
         <% var date = new Date(threads[i].timestamp);%>
-        
-          <tr class="list-item">
+        <% var marked = "" %>
+        <% if (threads[i].marked) marked = "marked" %>
+          <tr class="list-item" >
             <td class="list-title"><a class="thread-link" href=<%="/post/" + threads[i]._id%> ><%= threads[i].title %>
             </a></td>
-            <td class="list-author"><%= threads[i].author %></td>
+            <td class="<%='list-author ' + marked%>"><%= threads[i].author %></td>
             <td class="list-resp"><%= threads[i].responses %></td>
             <td class="list-date"><%= date.toDateString() %></td>    
-               
+            <% if (user != "" && admin) {%>
+            <td class="list-mark" id="<%='mark-' + threads[i]._id%>">
+              <button class="btn btn-outline-light btn-sm list-mark-btn">Mark</button>
+            </td>
+            <td class="list-delete" id=<%=threads[i]._id%>>
+              <button class="btn btn-outline-danger btn-sm list-delete-btn">Delete</button>
+              <button class="btn btn-outline-light btn-sm list-cancel-btn" hidden>Cancel</button>
+              <button class="btn btn-danger btn-sm list-positive-btn" hidden>Positive?</button>
+            </td>
+            <% } %> 
           </tr>
         
 
-        <%}%>
+        <% } %>
 
       </tbody>
     </table>
@@ -40,7 +54,7 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
   <script>window.jQuery || document.write('<script src="/js/lib/jquery-3.3.1.min.js"><\/script>')</script>
   <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
-  
+  <script src="/js/index.js"></script>
 
 <% include ./partials/footer %>
 

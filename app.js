@@ -59,7 +59,9 @@ app.get('/mech215', function(req, res) {
 		}
 		var threads = foundThreads.reverse();
 		// console.log(threads);
-		res.render("index", {threads: threads});
+		if (req.isAuthenticated() && req.user.admin)
+			res.render("index", {threads: threads, user: req.user.username, admin: true});
+		else res.render("index", {threads: threads, user: "", admin: false});
 	});
 });
 
@@ -231,11 +233,32 @@ app.post("/post/delete/:id", isLoggedIn, (req, res)=>{
 	Post.findById(req.params.id)
 		.then( post => {
 			
-			if (post.children == [] && ( post.parent == [] || !post.parent || post.parent == null )){
+			if (post.children.length == 0 && post.parent.length > 0){
+				var parent = post.parent[0];
 				post.remove()
 					.then(()=>{
-						console.log("Deleted post " + post._id);
-						res.send("success");
+						Post.findById(parent)
+							.then((foundParent)=>{
+								var i = foundParent.children.indexOf(req.params.id);
+								foundParent.children.splice(i,1);
+								foundParent.save()
+										   .then(()=>{
+										   		Thread.findById(foundParent.thread[0])
+										   			  .then(foundThread=>{
+										   			    foundThread.responses--;
+										   			    foundThread.save()
+										   			    		   .then(()=>{
+										   			    		   	console.log("Deleted post " + post._id);
+										   			    		   	res.send("success");
+										   			    		   })
+										   			    		   .catch(err=>{throw err})
+										   			  })
+										   			  .catch(err=>{throw err})
+										   })
+										   .catch(err=>{throw err})
+																
+							})
+							.catch( err => {throw err})
 					})
 					.catch( err => {
 						console.log(err);
@@ -273,19 +296,64 @@ app.post("/post/update/:id", isLoggedIn, (req, res)=>{
 
 app.post("/thread/delete/:id", isLoggedIn, (req, res)=>{
 	Thread.findById(req.params.id)
-		  .then(post => {
-		  	post.remove()
+		  .then(thread => {
+		  	thread.remove()
 		  		.then(()=>{
-		  			res.redirect("/mech215");
+		  			console.log("Deleted thread " + req.params.id);
+		  			res.send("success");
 		  		})
 		  		.catch((err)=>{
 		  			console.log(err)
-		  			res.redirect("/error");
+		  			res.send("error");
 		  		})
 		  })
 		  .catch((err)=>{
 		  	console.log(err);
-		  	res.redirect("/404");
+		  	res.send("404");
+		  })
+})
+
+app.post("/thread/mark/:id", isLoggedIn, (req, res)=>{
+	Thread.findById(req.params.id)
+		  .then(thread => {
+		  	if (thread.marked == undefined || !thread.marked)
+		  		thread.marked = true;
+		  	else thread.marked = false;
+		  		thread.save()
+		  		.then(()=>{
+		  			console.log("Modified mark at thread " + req.params.id)
+		  			res.send("success");
+		  		})
+		  		.catch((err)=>{
+		  			console.log(err)
+		  			res.send("error");
+		  		})
+		  })
+		  .catch((err)=>{
+		  	console.log(err);
+		  	res.send("404");
+		  })
+})
+
+app.post("/post/mark/:id", isLoggedIn, (req, res)=>{
+	Post.findById(req.params.id)
+		  .then(post => {
+		  	if (post.marked == undefined || !post.marked)
+		  		post.marked = true;
+		  	else post.marked = false;
+		  		post.save()
+		  		.then(()=>{
+		  			console.log("Modified mark at post " + req.params.id)
+		  			res.send("success");
+		  		})
+		  		.catch((err)=>{
+		  			console.log(err)
+		  			res.send("error");
+		  		})
+		  })
+		  .catch((err)=>{
+		  	console.log(err);
+		  	res.send("404");
 		  })
 })
 
@@ -306,39 +374,40 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 });
 
-app.get("/signup", isNotLoggedIn, (req, res)=>{
-	res.render("signup");
-})
+// app.get("/signup", isNotLoggedIn, (req, res)=>{
+// 	res.render("signup");
+// })
 
-app.post("/signup", isNotLoggedIn, (req, res) => {
+// app.post("/signup", isNotLoggedIn, (req, res) => {
     
-    // In case someone messes with the jquery
-    if (!req.body.password || !req.body.username){
-        res.redirect("/signup");
-    } else {
-        // Generate new Waves address
-     var newUser = {
-        username: req.body.username,
-		admin: true
-    };
+//     // In case someone messes with the jquery
+//     if (!req.body.password || !req.body.username){
+//         res.redirect("/signup");
+//     } else {
+//         // Generate new Waves address
+//      var newUser = {
+//         username: req.body.username,
+// 		admin: true
+//     };
     
   
-	User.register(new User(newUser), req.body.password, (err, user) => {
-                                                if(err){
-                                                    var msg;
-                                                    if (err.name === "UserExistsError") msg = "exists"
-                                                    else msg = err
-                                                    console.log("ERROR adding new user", msg);
-                                                    res.redirect("/error")
-                                                }
-                                                else {
-                                                    console.log("Created new user", user.username);
-                                                    res.redirect("/login");
-                                                } 
-                                            })    
+// 	User.register(new User(newUser), req.body.password, (err, user) => {
+//                                                 if(err){
+//                                                     var msg;
+//                                                     if (err.name === "UserExistsError") msg = "exists"
+//                                                     else msg = err
+//                                                     console.log("ERROR adding new user", msg);
+//                                                     res.redirect("/error")
+//                                                 }
+//                                                 else {
+//                                                     console.log("Created new user", user.username);
+//                                                     res.redirect("/login");
+//                                                 } 
+//                                             })    
     
-    }
-});
+//     }
+// });
+
 app.get('*', function(req, res) {
 	res.render("404");
 });
@@ -428,4 +497,7 @@ function sanitizeAdmin(string){
 	return true;
 }
 
+function sendMail(arg){
+	// do shit
+}
 

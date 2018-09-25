@@ -19,6 +19,15 @@ $("#thread-container").on("click", ".reply", function(){
 	openReply(location, "reply");
 })
 
+
+$("#thread-container").on("click",".mark",function(){
+    var postId = $(this).parent().attr('id');
+    $.post("/post/mark/"+postId, {}, function(resp){
+        if (resp == "success") location.reload();
+        else window.location.replace("/error");
+    })
+})
+
 $("#thread-container").on("click", ".edit", function(){
 	var location = $(this).parent().attr('id');
 	if (deleteTrueForm) cancelDelete(location);
