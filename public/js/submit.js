@@ -34,7 +34,7 @@ $("#submit").on("click", function(){
 		  else {
 		  	var info = "";
 		  	if(resp.details) info = resp.details;
-		  	ajaxError();
+		  	showError();
 		  }
 		});
 

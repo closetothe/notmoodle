@@ -27,14 +27,11 @@ module.exports = {
 																			to: [recipient],
 																			subject: "Someone replied",
 																			html:  `
-																			<h2>Someone replied to <a href=${post}>your post</a>:<\h2>
+																			<h2>Someone replied to <a href=${post}>your post</a>:</h2>
 																			<br>
-																			<p><strong>Name:</strong> ${who}<p> 
-																			<p><strong>Message:</strong><p> 
-																			
-																			{
+																			<p><strong>Name:</strong> ${who}</p> 
+																			<p><strong>Message:</strong></p> 
 																			${reply}
-																			}
 																			`
 																		};
 								transporter.sendMail(helperOptions, (error, info) => {
@@ -49,21 +46,21 @@ module.exports = {
 													})
 		},
 	
-		postNotify: function(permalink, contents, who){
+		postNotify: function(permalink, contents, who, email){
 			
 								let helperOptions = {
 																			from: '"Not Moodle" <mail.notmoodle@gmail.com>',
 																			to: ["mail.notmoodle@gmail.com"],
 																			subject: "Someone posted",
 																			html:  `
-																			<h2>Someone <a href=${permalink}>posted</a><\h2>
+																			<h2>Someone <a href=${permalink}>posted</a></h2>
 																			<br>
-																			<p><strong>Name:</strong> ${who}<p> 
-																			<p><strong>Message:</strong><p> 
-																			
-																			{
+																			<p><strong>Name:</strong> ${who}</p> 
+																			<p><strong>Email:</strong> ${email}</p>
+																			<p><strong>Message: </strong></p>
+																			<div style="color: grey"> 
 																			${contents}
-																			}
+																			</div>
 																			`
 																		};
 								transporter.sendMail(helperOptions, (error, info) => {

@@ -102,5 +102,13 @@ a.thread-link:active{
 	font-style: italic;
 }
 
+.dropdown-menu{
+	z-index: 10;
+}
 
 
+#click-box{
+	position: relative;
+	z-index: 10;
+	overflow: visible;
+}

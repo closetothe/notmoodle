@@ -24,7 +24,8 @@ app.set("view engine", "ejs");
 
 var Post = require("./models/Post"),
 	Thread = require("./models/Thread"),
-	User = require("./models/User");
+	User = require("./models/User"),
+	Click = require("./models/Click");
 	
 var LocalStrategy = require("passport-local"),
 	passportLocalMongoose = require("passport-local-mongoose");
@@ -83,14 +84,14 @@ app.post('/mech215/create', function(req, res) {
 		{	
 			res.send('error');
 		}
-	if (!req.isAuthenticated() && !sanitizeAdmin(req.body.author)){
+	else if (!req.isAuthenticated() && !sanitizeAdmin(req.body.author)){
 		res.send('error')
 	}
 
-	if (req.isAuthenticated() && !req.user.admin && !sanitizeAdmin(req.body.author)){
+	else if (req.isAuthenticated() && !req.user.admin && !sanitizeAdmin(req.body.author)){
 		res.send('error')
 	}
-
+	else {
 	var newPost = {};
 	newPost.thread = [];
 	newPost.children = [];
@@ -124,7 +125,7 @@ app.post('/mech215/create', function(req, res) {
 				  			console.log("Thread saved.");
 				  			resp.status = "success";
 				  			resp.id = thread._id;
-				  			mailer.postNotify(`${url}/post/${thread._id}`)
+				  			mailer.postNotify(`${url}/post/${thread._id}`, post.body, post.author, post.email)
 				  			res.send(resp);
 				  		})
 				  		.catch(err => {
@@ -143,7 +144,7 @@ app.post('/mech215/create', function(req, res) {
 			res.send(resp);
 		})
 
-	
+	}
 });
 
 
@@ -173,12 +174,13 @@ app.get('/post/:id', function(req, res) {
 app.post('/reply', function(req, res) {
 	if (!req.body.thread || !req.body.parent || !req.body.author || !req.body.content)
 		res.send("auth");
-	if (!req.isAuthenticated() && !sanitizeAdmin(req.body.author)){
+	else if (!req.isAuthenticated() && !sanitizeAdmin(req.body.author)){
 		res.send('auth');
 	}
-	if (req.isAuthenticated() && !req.user.admin && !sanitizeAdmin(req.body.author)){
+	else if (req.isAuthenticated() && !req.user.admin && !sanitizeAdmin(req.body.author)){
 		res.send('auth');
 	}
+	else{
 	var resp = {};
 	var newPost= {};
 	newPost.thread = [req.body.thread];
@@ -205,7 +207,7 @@ app.post('/reply', function(req, res) {
 						  			resp.status="success"
 								  	resp.id = post._id;
 								  	updateResponses(newPost.thread);
-								  	mailer.postNotify(`${url}/post/${post.thread[0]}#${post._id}`, post.body, post.author)
+								  	mailer.postNotify(`${url}/post/${post.thread[0]}#${post._id}`, post.body, post.author, post.email)
 								  	if(parentPost.email)
 								  		mailer.replyNotify(parentPost.email, `${url}/post/${parentPost.thread[0]}#${parentPost._id}`, post.body, post.author)	
 								  	try {
@@ -233,7 +235,7 @@ app.post('/reply', function(req, res) {
 			res.send(resp)
 		})
 	
-
+	}
 
 });
 
@@ -366,6 +368,57 @@ app.post("/post/mark/:id", isLoggedIn, (req, res)=>{
 		  })
 })
 
+app.post("/click", (req, res)=>{
+	if(req.body.what && req.body.os)
+	{
+		Click.find({what: req.body.what}, (err, found)=>{
+			if (!found || found.length < 1) {
+				var newClick = {
+					what: req.body.what,
+					operating_systems: [req.body.os],
+					total: 1
+				}	
+				Click.create(newClick)
+					 .then(click=>{
+					 	console.log(`Created click object ${click.what}`);
+					 	console.log(click.what, click.operating_systems[0], click.total);
+					 	res.send("success");
+					 })
+			}
+			else if (err){
+				console.log(err);
+				res.send("error");
+			}
+			else {
+				console.log(found);
+				found[0].total++;
+				found[0].operating_systems.push(req.body.os);
+				found[0].save()
+					 .then(()=>{
+					 	console.log(found[0].what, req.body.os, found[0].total);
+						res.send("success");
+					 })
+					 .catch((err)=>{
+					 	console.log(err);
+					 	res.send("error");
+					 })
+				}
+		})
+		
+	} 
+	
+	else 
+	{
+		res.send("error");
+	}
+})
+
+app.get("/clicks", isLoggedIn, (req, res)=>{
+	Click.find({})
+		 .then(clicks=>{
+		 	res.render("clicks", {clicks:clicks} );
+		 })
+})
 
 app.get("/login", isNotLoggedIn, (req, res)=>{
 	res.render("login");

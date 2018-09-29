@@ -93,6 +93,7 @@ $("#thread-container").on("click", "#submit", function(){
 				location.reload();
 			}
 			else if (resp == "auth"){
+				$("#submit").attr("disabled",false);
 				showError();
 			}
 			else {
@@ -144,8 +145,8 @@ $("#thread-container").on("click", "#submit-edit", function(){
 		
 	}
 	else{
-		showError();
 		$("#submit").attr("disabled",false);
+		showError();
 	}
 })
 
