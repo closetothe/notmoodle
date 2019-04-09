@@ -1,6 +1,6 @@
 # NOT Moodle
 
-www.notmoodle.com is a simple forum for the students of MECH 215 (C++ for Mechanical Engineers). The backend runs on an Ubuntu virtual machine with NodeJS, Express MongoDB.
+www.notmoodle.com is a simple forum for the students of MECH 215 (C++ for Mechanical Engineers). The backend runs on an Ubuntu virtual machine with NodeJS, Express, and MongoDB.
 
 I created it for two reasons:
 
