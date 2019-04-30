@@ -9,6 +9,7 @@ var threadSchema = new mongoose.Schema({
   author: String,
   marked: Boolean,
   timestamp: Date,
+  semester: String,
   initializer: {type: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Post"

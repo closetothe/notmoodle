@@ -104,6 +104,10 @@ $("#thread-container").on("click", "#submit", function(){
 				// window.location.replace("/error");
 			}
 		})
+		.fail(function(e){
+			showError(e.statusText + " (" + e.status + ")");
+			$("#submit").attr("disabled",false);
+		})
 
 
 		
@@ -140,9 +144,10 @@ $("#thread-container").on("click", "#submit-edit", function(){
 				// window.location.replace("/error");
 			}
 		})
-
-
-		
+		.fail(function(e){
+			showError(e.statusText + " (" + e.status + ")");
+			$("#submit").attr("disabled",false);
+		})
 	}
 	else{
 		$("#submit").attr("disabled",false);
@@ -158,7 +163,7 @@ function pageLoad(){
 
 // <div class = "reply-box">
 // 		<h1 class="reply-h1">Reply</h1>
-// 		<p id="error" class="more-red" hidden><em>You must enter all the fields!</em></p>
+// 		
 // 		<form action="/post" method="POST">
 // 		    <div class="form-row">
 // 			    <div class="col">
@@ -178,10 +183,11 @@ function pageLoad(){
 // 		</div>
 // 		<button id="submit" class="btn btn-dark">Submit</button>
 //		<button id="discard" class="btn btn-outline-dark">Discard</button>
+//		<p id="error" class="more-red" hidden><em>Incomplete fields!</em></p>
 // </div>
 
-var replyHTML = '<div class = "reply-box"><h1 class="reply-h1">Reply</h1><p id="error" class="more-red" hidden><em>You must enter all the fields!</em></p><form action="/post" method="POST"><div class="form-row"><div class="col"><input type="text" id="name-box" name="author" class="form-control" placeholder="Your Name"></div><div class="col"><input type="email" id = "email-box" name = "content" class="form-control" placeholder="(Optional) Email notification"></div></div></form><div id="quill-container" class="bg-white"><div id="toolbar" class="border-top"></div><div id="editor" class="border-bottom"><p>Enter text here! <em>Use the &lt;/&gt; feature for code snippets.</em></p></div></div><button id="submit" class="btn btn-dark">Submit</button><button id="discard" class="btn btn-outline-dark">Discard</button></div>'
-var editHTML = '<div class = "edit-box"><h1 class="reply-h1">Edit</h1><p id="error" class="more-red" hidden><em>You must enter all the fields!</em></p><form action="/post" method="POST"><div class="form-row"><div class="col"><input type="text" id="name-box" name="author" class="form-control" placeholder="Your Name"></div><div class="col"><input type="email" id = "email-box" name = "content" class="form-control" placeholder="(Optional) Email notification" disabled></div></div></form><div id="quill-container" class="bg-white"><div id="toolbar" class="border-top"></div><div id="editor" class="border-bottom"><p>Enter text here! <em>Use the &lt;/&gt; feature for code snippets.</em></p></div></div><button id="submit-edit" class="btn btn-dark">Submit</button><button id="discard" class="btn btn-outline-dark">Discard</button></div>'
+var replyHTML = '<div class = "reply-box"><h1 class="reply-h1">Reply</h1><p class="error more-red" hidden><em>You must enter all the fields!</em></p><form action="/post" method="POST"><div class="form-row"><div class="col"><input type="text" id="name-box" name="author" class="form-control" placeholder="Your Name"></div><div class="col"><input type="email" id = "email-box" name = "content" class="form-control" placeholder="(Optional) Email notification"></div></div></form><div id="quill-container" class="bg-white"><div id="toolbar" class="border-top"></div><div id="editor" class="border-bottom"><p>Enter text here! <em>Use the &lt;/&gt; feature for code snippets.</em></p></div></div><button id="submit" class="btn btn-dark">Submit</button><button id="discard" class="btn btn-outline-dark">Discard</button><p class="error more-red" hidden><em>Incomplete fields!</em></p></div>'
+var editHTML = '<div class = "edit-box"><h1 class="reply-h1">Edit</h1><p class="error more-red" hidden><em>You must enter all the fields!</em></p><form action="/post" method="POST"><div class="form-row"><div class="col"><input type="text" id="name-box" name="author" class="form-control" placeholder="Your Name"></div><div class="col"><input type="email" id = "email-box" name = "content" class="form-control" placeholder="(Optional) Email notification" disabled></div></div></form><div id="quill-container" class="bg-white"><div id="toolbar" class="border-top"></div><div id="editor" class="border-bottom"><p>Enter text here! <em>Use the &lt;/&gt; feature for code snippets.</em></p></div></div><button id="submit-edit" class="btn btn-dark">Submit</button><button id="discard" class="btn btn-outline-dark">Discard</button><p class="error more-red" hidden><em>Incomplete fields!</em></p></div>'
 
 
 function openReply(location, type) {
@@ -236,11 +242,19 @@ function cancelDelete(parent){
 }
 
 function showError(){
-	$("#error").attr("hidden", false);
+	$(".error").html("Incomplete fields!");
+	$(".error").attr("hidden", false);
 	console.log("Incomplete fields");
 }
 
 function ajaxError(info){
-	$("#ajax-error").attr("hidden", false);
+	$(".error").html("Unexpected error");
+	$(".error").attr("hidden", false);
 	console.log("AJAX error", info);
+}
+
+function showError(text){
+	$(".error").html(text);
+	$(".error").attr("hidden", false);
+	console.log("ERROR: \n", text);
 }

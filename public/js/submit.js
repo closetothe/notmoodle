@@ -25,7 +25,7 @@ $("#submit").on("click", function(){
 			email: email
 		}
 
-		$.post( "/mech215/create", postData, function( resp ) {
+		$.post( "/mech215/create", postData, function( resp, err ) {
 		  if (resp.status === "success"){
 			  console.log(resp.id, "redirecting...");
 			  $("#submit").attr("disabled", true);
@@ -36,6 +36,9 @@ $("#submit").on("click", function(){
 		  	if(resp.details) info = resp.details;
 		  	showError();
 		  }
+		})
+		.fail(function(e){
+			showError(e.statusText + " (" + e.status + ")");
 		});
 
 	}
@@ -45,11 +48,22 @@ $("#submit").on("click", function(){
 })
 
 function showError(){
+	$("#error").html("Incomplete fields!");
 	$("#error").attr("hidden", false);
 	console.log("Incomplete fields");
+	window.scrollTo(0,0)
 }
 
 function ajaxError(info){
-	$("#ajax-error").attr("hidden", false);
+	$("#error").html("Unexpected error");
+	$("#error").attr("hidden", false);
 	console.log("AJAX error", info);
+	window.scrollTo(0,0)
+}
+
+function showError(text){
+	$("#error").html(text);
+	$("#error").attr("hidden", false);
+	console.log("ERROR: \n", text);
+	window.scrollTo(0,0)
 }

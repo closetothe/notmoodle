@@ -9,7 +9,6 @@ var express = require("express"),
 	passport = require("passport"),
 	mongoose = require("mongoose"),
 	async = require("async");
-	
 
 var mailer = require("./mailtools");
 
@@ -35,7 +34,7 @@ app.use(require("express-session")({
 	resave: false,
 	saveUninitialized: false
 }));
-
+console.log(process.env.s);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -53,21 +52,38 @@ mongoose.connect("mongodb://localhost/notmoodle", { useNewUrlParser: true });
 
 
 app.get('/', function(req,res) {
-	res.redirect('/mech215');
+	res.redirect('/mech215/2019/winter');
 })
 
-app.get('/mech215', function(req, res) {
-	Thread.find({}).sort('-date').exec((err, foundThreads)=>{
-		if (err) {
-			console.log(err);
-			res.redirect("/404");
-		}
-		var threads = foundThreads.reverse();
-		// console.log(threads);
-		if (req.isAuthenticated() && req.user.admin)
-			res.render("index", {threads: threads, user: req.user.username, admin: true});
-		else res.render("index", {threads: threads, user: "", admin: false});
-	});
+app.get('/mech215', function(req,res) {
+	res.redirect('/mech215/2019/winter');
+})
+
+app.get('/mech215/:year/:semester', function(req, res) {
+	var y = parseInt(req.params.year);
+	var semester = (req.params.semester).toLowerCase();
+	if (y < 2018 || y > 2019) res.redirect('/404');
+	else if (semester != "fall" && semester != "winter" && semester != "summer") 
+		res.redirect('/404');
+	else{
+		Thread.find({
+			"semester": semester,	
+			"timestamp": {         
+				$gte: new Date(y,0,1),         
+				$lt: new Date((y+1),0,1)
+			}
+			}).sort('-date').exec((err, foundThreads)=>{
+			if (err) {
+				console.log(err);
+				res.redirect("/404");
+			}
+			var threads = foundThreads.reverse();
+			// console.log(threads);
+			if (req.isAuthenticated() && req.user.admin)
+				res.render("index", {threads: threads, user: req.user.username, admin: true});
+			else res.render("index", {threads: threads, user: "", admin: false});
+		});
+	}
 });
 
 
@@ -108,12 +124,13 @@ app.post('/mech215/create', function(req, res) {
 	Post.create(newPost)
 		.then( post => {
 			console.log("Post saved.");
-
+			var semester = determineSemester();
 			var newThread = {
 				title: req.body.title,
 				responses: 0,
 				timestamp: post.timestamp,
 				author: post.author,
+				semester: semester,
 				initializer: [post]
 			}
 
@@ -559,7 +576,19 @@ function sanitizeAdmin(string){
 	return true;
 }
 
-function sendMail(arg){
-	// do shit
+function determineSemester(){
+	// Jan -> 0
+	// Feb -> 1
+	// ...
+	// May -> 4
+	// ...
+	// Sept -> 8
+	var today = new Date();
+	var month = today.getMonth();
+	var semester;
+	if (month >= 0 && month < 4) semester = "winter";
+	else if (month >= 4 && month < 8) semester = "summer";
+	else semester = "fall";
+	
+	return semester;
 }
-

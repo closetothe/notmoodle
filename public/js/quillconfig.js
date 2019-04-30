@@ -1,5 +1,5 @@
 
-var toolbarOptions = ['bold', 'italic', 'underline', 'strike', 'code-block', {'list': 'ordered'}, {'list': 'bullet'}, {'color':[]}, {'align': []}, 'link', 'image', 'clean'];
+var toolbarOptions = ['bold', 'italic', 'underline', 'strike', {'color':[]}, 'code-block', 'formula', {'list': 'ordered'}, {'list': 'bullet'}, {'align': []}, 'link', 'image', 'clean'];
 var quill;
 
 function quillInit(){
