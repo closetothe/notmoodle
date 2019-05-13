@@ -1,4 +1,4 @@
-<% include ./partials/header %>
+<% include ./partials/mech215_header %>
 <link rel="stylesheet" type="text/css" href="/css/login.css">
 
 <div class="centered container" id="login-container">
@@ -8,10 +8,10 @@
 	<p id="ajax-error" class="not-red" hidden>A server error occurred and I've been notified. Please try again later.</p>
 	<form action="/login" method="POST">
 	    <div class="form-group">
-	      <input type="text" id="title-box" name="username" class="form-control" placeholder="Username">
+	      <input type="text" id="username-box" name="username" class="form-control" placeholder="Username">
 	    </div>
 	    <div>
-	      <input type="password" id="title-box" name="password" class="form-control" placeholder="Password">
+	      <input type="password" id="password-box" name="password" class="form-control" placeholder="Password">
 	    </div>
 	    <button type="submit" id="submit-login" class="btn btn-dark">Submit</button>
   	</form>

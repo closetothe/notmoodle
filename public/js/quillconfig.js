@@ -7,7 +7,8 @@ function quillInit(){
 	  theme: 'snow',
 	  modules: {
 	  		toolbar: toolbarOptions
-		}
+		},
+	  placeholder: 'Enter text here! Use the </> feature for code snippets.'
 	});
 }
 

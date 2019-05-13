@@ -5,14 +5,13 @@ var defaultText = "Enter text here! Use the </> feature for code snippets.\n"
 quillInit();
 
 $("#submit").on("click", function(){
-	
+	console.log(topic);
 	if (titleBox.val() && nameBox.val() && quill.getText() != defaultText && quill.getText() != "\n"){
 		
 		var title = titleBox.val();
 		var author = nameBox.val();
 		var content = getHTML();
 		var email = "";	
-
 
 		if (emailBox.val()){
 			email = emailBox.val();
@@ -22,10 +21,12 @@ $("#submit").on("click", function(){
 			title: title,
 			author: author,
 			content: content,
-			email: email
+			email: email,
 		}
 
-		$.post( "/mech215/create", postData, function( resp, err ) {
+		// Note: using global variable 'topic'
+		// (I know, this is not the best way of doing things...)
+		$.post( "/" + topic + "/create", postData, function( resp, err ) {
 		  if (resp.status === "success"){
 			  console.log(resp.id, "redirecting...");
 			  $("#submit").attr("disabled", true);

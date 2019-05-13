@@ -1,8 +1,8 @@
 var url = window.location.pathname;
 var threadId = $("#metadata").attr("thread-id");
 var replyOpen = false;
-var defaultText = "Enter text here! Use the </> feature for code snippets.\n"
-
+// var defaultText = "Enter text here! Use the </> feature for code snippets.\n"
+var defaultText = "";
 
 $("#thread-container").on("click", ".permalink", function(){
 	var pm = $(this).parent().attr('id');
@@ -186,8 +186,8 @@ function pageLoad(){
 //		<p id="error" class="more-red" hidden><em>Incomplete fields!</em></p>
 // </div>
 
-var replyHTML = '<div class = "reply-box"><h1 class="reply-h1">Reply</h1><p class="error more-red" hidden><em>You must enter all the fields!</em></p><form action="/post" method="POST"><div class="form-row"><div class="col"><input type="text" id="name-box" name="author" class="form-control" placeholder="Your Name"></div><div class="col"><input type="email" id = "email-box" name = "content" class="form-control" placeholder="(Optional) Email notification"></div></div></form><div id="quill-container" class="bg-white"><div id="toolbar" class="border-top"></div><div id="editor" class="border-bottom"><p>Enter text here! <em>Use the &lt;/&gt; feature for code snippets.</em></p></div></div><button id="submit" class="btn btn-dark">Submit</button><button id="discard" class="btn btn-outline-dark">Discard</button><p class="error more-red" hidden><em>Incomplete fields!</em></p></div>'
-var editHTML = '<div class = "edit-box"><h1 class="reply-h1">Edit</h1><p class="error more-red" hidden><em>You must enter all the fields!</em></p><form action="/post" method="POST"><div class="form-row"><div class="col"><input type="text" id="name-box" name="author" class="form-control" placeholder="Your Name"></div><div class="col"><input type="email" id = "email-box" name = "content" class="form-control" placeholder="(Optional) Email notification" disabled></div></div></form><div id="quill-container" class="bg-white"><div id="toolbar" class="border-top"></div><div id="editor" class="border-bottom"><p>Enter text here! <em>Use the &lt;/&gt; feature for code snippets.</em></p></div></div><button id="submit-edit" class="btn btn-dark">Submit</button><button id="discard" class="btn btn-outline-dark">Discard</button><p class="error more-red" hidden><em>Incomplete fields!</em></p></div>'
+var replyHTML = '<div class = "reply-box"><h1 class="reply-h1">Reply</h1><p class="error more-red" hidden><em>You must enter all the fields!</em></p><form action="/post" method="POST"><div class="form-row"><div class="col"><input type="text" id="name-box" name="author" class="form-control" placeholder="Your Name"></div><div class="col"><input type="email" id = "email-box" name = "content" class="form-control" placeholder="(Optional) Email notification"></div></div></form><div id="quill-container" class="bg-white"><div id="toolbar" class="border-top"></div><div id="editor" class="border-bottom">' + defaultText + '</div></div><button id="submit" class="btn btn-dark">Submit</button><button id="discard" class="btn btn-outline-dark">Discard</button><p class="error more-red" hidden><em>Incomplete fields!</em></p></div>'
+var editHTML = '<div class = "edit-box"><h1 class="reply-h1">Edit</h1><p class="error more-red" hidden><em>You must enter all the fields!</em></p><form action="/post" method="POST"><div class="form-row"><div class="col"><input type="text" id="name-box" name="author" class="form-control" placeholder="Your Name"></div><div class="col"><input type="email" id = "email-box" name = "content" class="form-control" placeholder="(Optional) Email notification" disabled></div></div></form><div id="quill-container" class="bg-white"><div id="toolbar" class="border-top"></div><div id="editor" class="border-bottom">' + defaultText + '</div></div><button id="submit-edit" class="btn btn-dark">Submit</button><button id="discard" class="btn btn-outline-dark">Discard</button><p class="error more-red" hidden><em>Incomplete fields!</em></p></div>'
 
 
 function openReply(location, type) {
@@ -258,3 +258,6 @@ function showError(text){
 	$(".error").attr("hidden", false);
 	console.log("ERROR: \n", text);
 }
+
+console.log("Tagging posts...");
+tagPosts();

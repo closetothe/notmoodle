@@ -39,3 +39,6 @@ $("#forum").on("click",".list-mark-btn",function(){
         else window.location.replace("/error");
     })
 })
+
+console.log("Tagging posts...");
+tagPosts();

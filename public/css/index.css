@@ -57,7 +57,6 @@ table {
   overflow: hidden;
 }
 
-
 #forum{
 	padding: 3% 3% 8% 3%;
 }
@@ -106,9 +105,52 @@ a.thread-link:active{
 	z-index: 10;
 }
 
+.tag {
+	color: #fa8624;
+}
+
+a:hover {
+	text-decoration: none;
+}
 
 #click-box{
 	position: relative;
 	z-index: 10;
 	overflow: visible;
 }
+
+
+
+/*.detdb {*/
+/*	background-color: #0e1b25;*/
+/*}*/
+
+/*.detdb input,textarea {*/
+/*  background-color: #0e1b25;*/
+/*}*/
+
+/*.detdb h1,p {*/
+/*	color: #dae7f1 !important;*/
+/*}*/
+
+/*.detdb .tag,th {*/
+/*	color: #b8631a !important;*/
+/*}*/
+
+/*.detdb #editor, .ql-toolbar {*/
+/*    background-color: #0e1b25;*/
+/*    color: #dae7f1;*/
+/*    overflow: visible;*/
+/*}*/
+
+/*.detdb #editor .ql-editor.ql-blank::before {*/
+/*    color: #dae7f1 !important;*/
+/*}*/
+
+/*.detdb #editor svg {*/
+/*	fill: #dae7f1 !important;*/
+/*}*/
+
+/*.detdb .post-box a {*/
+/*	color: #878d92;*/
+/*}*/

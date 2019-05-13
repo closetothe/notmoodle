@@ -2,6 +2,7 @@
 
 // Dependencies
 const url = "https://www.notmoodle.com"
+const topics = new Set(['mech215', 'detdb']);
 
 var express = require("express"),
 	compression = require("compression"),
@@ -55,9 +56,16 @@ app.get('/', function(req,res) {
 	res.redirect('/mech215/2019/winter');
 })
 
+
+
+/* * * * * *
+ * MECH215 *
+ * * * * * */
+ 
 app.get('/mech215', function(req,res) {
 	res.redirect('/mech215/2019/winter');
 })
+
 
 app.get('/mech215/:year/:semester', function(req, res) {
 	var y = parseInt(req.params.year);
@@ -67,6 +75,7 @@ app.get('/mech215/:year/:semester', function(req, res) {
 		res.redirect('/404');
 	else{
 		Thread.find({
+			"topic": "mech215",
 			"semester": semester,	
 			"timestamp": {         
 				$gte: new Date(y,0,1),         
@@ -80,32 +89,37 @@ app.get('/mech215/:year/:semester', function(req, res) {
 			var threads = foundThreads.reverse();
 			// console.log(threads);
 			if (req.isAuthenticated() && req.user.admin)
-				res.render("index", {threads: threads, user: req.user.username, admin: true});
-			else res.render("index", {threads: threads, user: "", admin: false});
+				res.render("index", {topic: 'mech215', threads: threads, user: req.user.username, admin: true});
+			else res.render("index", {topic: 'mech215', threads: threads, user: "", admin: false});
 		});
 	}
 });
 
 
 
-app.get('/mech215/create', function(req,res) {
-	res.render("create");
-})
+
+app.get('/:topic/create', function(req,res) {
+	let topic = req.params.topic;
+	res.render("create", {topic: topic});
+});
 
 
 
-app.post('/mech215/create', function(req, res) {
+app.post('/:topic/create', function(req, res) {
 	var resp = {};
+	var topic = req.params.topic;
+	console.log(topic);
+	if(!topics.has(topic)) res.redirect('404');
 	if (!req.body.title || !req.body.author || !req.body.content)
 		{	
 			res.send('error');
 		}
 	else if (!req.isAuthenticated() && !sanitizeAdmin(req.body.author)){
-		res.send('error')
+		res.send('error');
 	}
 
 	else if (req.isAuthenticated() && !req.user.admin && !sanitizeAdmin(req.body.author)){
-		res.send('error')
+		res.send('error');
 	}
 	else {
 	var newPost = {};
@@ -124,11 +138,13 @@ app.post('/mech215/create', function(req, res) {
 	Post.create(newPost)
 		.then( post => {
 			console.log("Post saved.");
+			console.log(post);
 			var semester = determineSemester();
 			var newThread = {
 				title: req.body.title,
 				responses: 0,
 				timestamp: post.timestamp,
+				topic: topic,
 				author: post.author,
 				semester: semester,
 				initializer: [post]
@@ -142,11 +158,11 @@ app.post('/mech215/create', function(req, res) {
 				  			console.log("Thread saved.");
 				  			resp.status = "success";
 				  			resp.id = thread._id;
-				  			mailer.postNotify(`${url}/post/${thread._id}`, post.body, post.author, post.email)
+				  			mailer.postNotify(`${url}/post/${thread._id}`, post.body, post.author, post.email);
 				  			res.send(resp);
 				  		})
 				  		.catch(err => {
-				  			throw err
+				  			throw err;
 				  		});
 				  })
 				  .catch( err => {
@@ -159,7 +175,7 @@ app.post('/mech215/create', function(req, res) {
 			resp.status = 'error';
 			resp.details = err;
 			res.send(resp);
-		})
+		});
 
 	}
 });
@@ -173,12 +189,21 @@ app.get('/post/:id', function(req, res) {
 			res.redirect("/404");
 		}
 		else {
+			let topic = thread.topic;
 			getPostPriority(thread.initializer[0], [])
 				.then((priority)=>{
 					if(req.isAuthenticated())
-						res.render("thread", {title:thread.title, priority: priority, user: req.user.username, admin: req.user.admin});
+						res.render("thread", {topic: topic, 
+											  title:thread.title, 
+											  priority: priority, 
+											  user: req.user.username, 
+											  admin: req.user.admin});
 					else
-						res.render("thread", {title:thread.title, priority: priority, user: "", admin: false});
+						res.render("thread", {topic: topic, 
+											  title:thread.title, 
+											  priority: priority, 
+											  user: "", 
+											  admin: false});
 				})
 				.catch( err => {
 					console.log(err);
@@ -256,7 +281,7 @@ app.post('/reply', function(req, res) {
 
 });
 
-app.post("/post/delete/:id", isLoggedIn, (req, res)=>{
+app.post("/post/delete/:id", isLoggedIn, (req, res) => {
 	console.log(req.params.id);
 	Post.findById(req.params.id)
 		.then( post => {
@@ -451,6 +476,43 @@ app.post("/login", passport.authenticate("local", {
 app.get("/logout", (req, res) => {
     req.logout();
     res.redirect("/");
+});
+
+/* * * * * *
+ * GENERIC *
+ * * * * * */
+
+app.get('/404', function(req, res) {
+	res.render("404");
+});
+
+
+app.get('/:topic', function(req,res) {
+	let topic = (req.params.topic).toLowerCase();
+	if(topics.has(topic)) {
+		Thread.find({topic: topic})
+			  .sort('-date')
+			  .exec((err, foundThreads) => {
+			  	if(err) {
+			  		console.log(err);
+			  		res.redirect('/404');
+			  	}
+			  	let threads = foundThreads.reverse();
+			  	if (req.isAuthenticated() && req.user.admin)
+					res.render(topic, {topic: topic, 
+									   threads: threads, 
+									   user: req.user.username, 
+									   admin: true});
+				else res.render(topic, {topic: topic, 
+										threads: threads, 
+										user: "", 
+										admin: false});
+			  });
+	} else {
+		// Topic does not exist in the forum
+		res.redirect('/404');
+	}
+	
 });
 
 // app.get("/signup", isNotLoggedIn, (req, res)=>{
