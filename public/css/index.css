@@ -129,7 +129,7 @@ a:hover {
   background-color: #0e1b25;
 }
 
-.detdb h1,p {
+.detdb h1,h2,p,li {
 	color: #dae7f1 !important;
 }
 
