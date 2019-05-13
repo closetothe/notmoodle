@@ -121,36 +121,36 @@ a:hover {
 
 
 
-/*.detdb {*/
-/*	background-color: #0e1b25;*/
-/*}*/
+.detdb {
+	background-color: #0e1b25;
+}
 
-/*.detdb input,textarea {*/
-/*  background-color: #0e1b25;*/
-/*}*/
+.detdb input,textarea {
+  background-color: #0e1b25;
+}
 
-/*.detdb h1,p {*/
-/*	color: #dae7f1 !important;*/
-/*}*/
+.detdb h1,p {
+	color: #dae7f1 !important;
+}
 
-/*.detdb .tag,th {*/
-/*	color: #b8631a !important;*/
-/*}*/
+.detdb .tag,th {
+	color: #b8631a !important;
+}
 
-/*.detdb #editor, .ql-toolbar {*/
-/*    background-color: #0e1b25;*/
-/*    color: #dae7f1;*/
-/*    overflow: visible;*/
-/*}*/
+.detdb #editor, .ql-toolbar {
+    background-color: #0e1b25;
+    color: #dae7f1;
+    overflow: visible;
+}
 
-/*.detdb #editor .ql-editor.ql-blank::before {*/
-/*    color: #dae7f1 !important;*/
-/*}*/
+.detdb #editor .ql-editor.ql-blank::before {
+    color: #dae7f1 !important;
+}
 
-/*.detdb #editor svg {*/
-/*	fill: #dae7f1 !important;*/
-/*}*/
+.detdb #editor svg {
+	fill: #dae7f1 !important;
+}
 
-/*.detdb .post-box a {*/
-/*	color: #878d92;*/
-/*}*/
+.detdb .post-box a {
+	color: #878d92;
+}

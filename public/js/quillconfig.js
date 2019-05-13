@@ -1,3 +1,4 @@
+// Config quill box
 
 var toolbarOptions = ['bold', 'italic', 'underline', 'strike', {'color':[]}, 'code-block', 'formula', {'list': 'ordered'}, {'list': 'bullet'}, {'align': []}, 'link', 'image', 'clean'];
 var quill;

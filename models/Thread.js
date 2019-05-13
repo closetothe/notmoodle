@@ -1,8 +1,5 @@
 var mongoose = require("mongoose");
 
-
-// Post
-
 var threadSchema = new mongoose.Schema({
   title: {type: String, required: true},
   responses: Number,

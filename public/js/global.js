@@ -1,4 +1,9 @@
-
+/* Jamiel Rahi
+ * notmoodle
+ * GPL 2019
+ *
+ * Global utilities. Right now, only the click data handler.
+ */
 
 $(".click").on("click", function(){
     var doc = $(this).html();

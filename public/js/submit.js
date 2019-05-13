@@ -1,3 +1,13 @@
+/* Jamiel Rahi
+ * notmoodle
+ * GPL 2019
+ *
+ * This file handles post creation. Note that we use the global 'topic' variable
+ * to tell the server which topic it falls under. This variable is injected into
+ * a script tag through EJS. Obviously, this is not the best way.
+ */
+
+
 var titleBox = $("#title-box");
 var nameBox = $("#name-box");
 var emailBox = $("#email-box");

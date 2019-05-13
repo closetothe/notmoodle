@@ -1,8 +1,16 @@
-'use strict';
+/* Jamiel Rahi
+ * notmoodle
+ * GPL 2019
+ *
+ * NOT Moodle.
+ * I made this site so I could communicate with my students during my time
+ * as a TA for MECH 215 (Intro to C++). 
+ * Concordia usually uses Moodle, but I didn't have access
+ * and even if I did people wouldn't take it seriously. Moodle is horrendous.
+ * The only way was to go rogue.
+ */
 
-// Dependencies
-const url = "https://www.notmoodle.com"
-const topics = new Set(['mech215', 'detdb']);
+'use strict';
 
 var express = require("express"),
 	compression = require("compression"),
@@ -10,8 +18,6 @@ var express = require("express"),
 	passport = require("passport"),
 	mongoose = require("mongoose"),
 	async = require("async");
-
-var mailer = require("./mailtools");
 
 
 var app = express();
@@ -22,11 +28,20 @@ app.use(bodyParser.urlencoded({
 }));
 app.set("view engine", "ejs");
 
+// Models
 var Post = require("./models/Post"),
 	Thread = require("./models/Thread"),
 	User = require("./models/User"),
 	Click = require("./models/Click");
 	
+// Routes
+var mechRoutes = require("./routes/mech215"),
+	forumRoutes = require("./routes/forum"),
+	authRoutes = require("./routes/auth"),
+	miscRoutes = require("./routes/misc");
+
+
+// Initialize everything
 var LocalStrategy = require("passport-local"),
 	passportLocalMongoose = require("passport-local-mongoose");
 	
@@ -35,6 +50,7 @@ app.use(require("express-session")({
 	resave: false,
 	saveUninitialized: false
 }));
+
 console.log(process.env.s);
 app.use(passport.initialize());
 app.use(passport.session());
@@ -51,503 +67,23 @@ passport.deserializeUser(User.deserializeUser());
 mongoose.Promise = global.Promise;  
 mongoose.connect("mongodb://localhost/notmoodle", { useNewUrlParser: true });
 
+// Done initializing everything
+
+// Declare routes (careful with the order)
 
 app.get('/', function(req,res) {
 	res.redirect('/mech215/2019/winter');
 })
 
-
-
-/* * * * * *
- * MECH215 *
- * * * * * */
- 
-app.get('/mech215', function(req,res) {
-	res.redirect('/mech215/2019/winter');
-})
-
-
-app.get('/mech215/:year/:semester', function(req, res) {
-	var y = parseInt(req.params.year);
-	var semester = (req.params.semester).toLowerCase();
-	if (y < 2018 || y > 2019) res.redirect('/404');
-	else if (semester != "fall" && semester != "winter" && semester != "summer") 
-		res.redirect('/404');
-	else{
-		Thread.find({
-			"topic": "mech215",
-			"semester": semester,	
-			"timestamp": {         
-				$gte: new Date(y,0,1),         
-				$lt: new Date((y+1),0,1)
-			}
-			}).sort('-date').exec((err, foundThreads)=>{
-			if (err) {
-				console.log(err);
-				res.redirect("/404");
-			}
-			var threads = foundThreads.reverse();
-			// console.log(threads);
-			if (req.isAuthenticated() && req.user.admin)
-				res.render("index", {topic: 'mech215', threads: threads, user: req.user.username, admin: true});
-			else res.render("index", {topic: 'mech215', threads: threads, user: "", admin: false});
-		});
-	}
-});
-
-
-
-
-app.get('/:topic/create', function(req,res) {
-	let topic = req.params.topic;
-	res.render("create", {topic: topic});
-});
-
-
-
-app.post('/:topic/create', function(req, res) {
-	var resp = {};
-	var topic = req.params.topic;
-	console.log(topic);
-	if(!topics.has(topic)) res.redirect('404');
-	if (!req.body.title || !req.body.author || !req.body.content)
-		{	
-			res.send('error');
-		}
-	else if (!req.isAuthenticated() && !sanitizeAdmin(req.body.author)){
-		res.send('error');
-	}
-
-	else if (req.isAuthenticated() && !req.user.admin && !sanitizeAdmin(req.body.author)){
-		res.send('error');
-	}
-	else {
-	var newPost = {};
-	newPost.thread = [];
-	newPost.children = [];
-	newPost.parent = [];
-	newPost.author = req.body.author;
-	newPost.body = req.body.content;
-	newPost.admin = false;
-	newPost.depth = 0;
-
-	if (req.body.email){
-		newPost.email = req.body.email;
-	}
-
-	Post.create(newPost)
-		.then( post => {
-			console.log("Post saved.");
-			console.log(post);
-			var semester = determineSemester();
-			var newThread = {
-				title: req.body.title,
-				responses: 0,
-				timestamp: post.timestamp,
-				topic: topic,
-				author: post.author,
-				semester: semester,
-				initializer: [post]
-			}
-
-			Thread.create(newThread)
-				  .then( thread => {
-				  	post.thread.push(thread);
-				  	post.save()
-				  		.then( ()=> {
-				  			console.log("Thread saved.");
-				  			resp.status = "success";
-				  			resp.id = thread._id;
-				  			mailer.postNotify(`${url}/post/${thread._id}`, post.body, post.author, post.email);
-				  			res.send(resp);
-				  		})
-				  		.catch(err => {
-				  			throw err;
-				  		});
-				  })
-				  .catch( err => {
-				  	throw err;
-				  });
-
-		})
-		.catch( err => {
-			console.log(err);
-			resp.status = 'error';
-			resp.details = err;
-			res.send(resp);
-		});
-
-	}
-});
-
-
-app.get('/post/:id', function(req, res) {
-	var id = req.params.id;
-	Thread.findById(id, function(err, thread){
-		if (err || thread == null) {
-			console.log(err);
-			res.redirect("/404");
-		}
-		else {
-			let topic = thread.topic;
-			getPostPriority(thread.initializer[0], [])
-				.then((priority)=>{
-					if(req.isAuthenticated())
-						res.render("thread", {topic: topic, 
-											  title:thread.title, 
-											  priority: priority, 
-											  user: req.user.username, 
-											  admin: req.user.admin});
-					else
-						res.render("thread", {topic: topic, 
-											  title:thread.title, 
-											  priority: priority, 
-											  user: "", 
-											  admin: false});
-				})
-				.catch( err => {
-					console.log(err);
-					res.redirect("/");
-				})
-		}
-	})
-});
-
-app.post('/reply', function(req, res) {
-	if (!req.body.thread || !req.body.parent || !req.body.author || !req.body.content)
-		res.send("auth");
-	else if (!req.isAuthenticated() && !sanitizeAdmin(req.body.author)){
-		res.send('auth');
-	}
-	else if (req.isAuthenticated() && !req.user.admin && !sanitizeAdmin(req.body.author)){
-		res.send('auth');
-	}
-	else{
-	var resp = {};
-	var newPost= {};
-	newPost.thread = [req.body.thread];
-	newPost.parent = [req.body.parent];
-	newPost.author = req.body.author;
-	newPost.body = req.body.content;
-	newPost.admin = false;
-
-	if (req.body.email){
-		newPost.email = req.body.email;
-	}
-
-	Post.create(newPost)
-		.then( post => {
-			console.log("Created new post: ", post);
-			Post.findById(newPost.parent, (err, parentPost)=>{
-				if (err) throw err;
-				parentPost.children.push(post);
-				parentPost.save()
-						  .then( ()=> {
-						  	post.depth = parentPost.depth + 1;
-						  	post.save()
-						  		.then( ()=> {
-						  			resp.status="success"
-								  	resp.id = post._id;
-								  	updateResponses(newPost.thread);
-								  	mailer.postNotify(`${url}/post/${post.thread[0]}#${post._id}`, post.body, post.author, post.email)
-								  	if(parentPost.email)
-								  		mailer.replyNotify(parentPost.email, `${url}/post/${parentPost.thread[0]}#${parentPost._id}`, post.body, post.author)	
-								  	try {
-								  		res.send(resp)
-								  	}
-								  	catch (err) {
-								  		throw err;
-								  	}
-								  	
-						  		})
-						  		.catch( err => {throw err});
-						  })
-						  .catch( err => {
-						  	console.log(err);
-							resp.status="err";
-							resp.details = err;
-							res.send(resp)
-						  })
-			})
-		})
-		.catch( err => {
-			console.log(err);
-			resp.status="err";
-			resp.details = err;
-			res.send(resp)
-		})
-	
-	}
-
-});
-
-app.post("/post/delete/:id", isLoggedIn, (req, res) => {
-	console.log(req.params.id);
-	Post.findById(req.params.id)
-		.then( post => {
-			
-			if (post.children.length == 0 && post.parent.length > 0){
-				var parent = post.parent[0];
-				post.remove()
-					.then(()=>{
-						Post.findById(parent)
-							.then((foundParent)=>{
-								var i = foundParent.children.indexOf(req.params.id);
-								foundParent.children.splice(i,1);
-								foundParent.save()
-										   .then(()=>{
-										   		Thread.findById(foundParent.thread[0])
-										   			  .then(foundThread=>{
-										   			    foundThread.responses--;
-										   			    foundThread.save()
-										   			    		   .then(()=>{
-										   			    		   	console.log("Deleted post " + post._id);
-										   			    		   	res.send("success");
-										   			    		   })
-										   			    		   .catch(err=>{throw err})
-										   			  })
-										   			  .catch(err=>{throw err})
-										   })
-										   .catch(err=>{throw err})
-																
-							})
-							.catch( err => {throw err})
-					})
-					.catch( err => {
-						console.log(err);
-						res.send("error");
-					})
-			}
-			else {
-				updatePost(post._id,"[deleted]", "[deleted]")
-					 .then( () => {
-					 	console.log("Deleted post " + post._id);
-						res.send("success");
-					 })
-					 .catch( err => {
-					 	console.log(err);
-						res.send("error");
-					 })
-			}
-		})
-		.catch( err => {
-			console.log(err);
-			res.send("404");
-		})
-})
-
-app.post("/post/update/:id", isLoggedIn, (req, res)=>{
-	updatePost(req.params.id, req.body.author, req.body.message)
-		.then(()=>{
-			res.send("success");
-		})
-		.catch((err)=>{
-			console.log(err);
-			res.send("error");
-		})
-})
-
-app.post("/thread/delete/:id", isLoggedIn, (req, res)=>{
-	Thread.findById(req.params.id)
-		  .then(thread => {
-		  	thread.remove()
-		  		.then(()=>{
-		  			console.log("Deleted thread " + req.params.id);
-		  			res.send("success");
-		  		})
-		  		.catch((err)=>{
-		  			console.log(err)
-		  			res.send("error");
-		  		})
-		  })
-		  .catch((err)=>{
-		  	console.log(err);
-		  	res.send("404");
-		  })
-})
-
-app.post("/thread/mark/:id", isLoggedIn, (req, res)=>{
-	Thread.findById(req.params.id)
-		  .then(thread => {
-		  	if (thread.marked == undefined || !thread.marked)
-		  		thread.marked = true;
-		  	else thread.marked = false;
-		  		thread.save()
-		  		.then(()=>{
-		  			console.log("Modified mark at thread " + req.params.id)
-		  			res.send("success");
-		  		})
-		  		.catch((err)=>{
-		  			console.log(err)
-		  			res.send("error");
-		  		})
-		  })
-		  .catch((err)=>{
-		  	console.log(err);
-		  	res.send("404");
-		  })
-})
-
-app.post("/post/mark/:id", isLoggedIn, (req, res)=>{
-	Post.findById(req.params.id)
-		  .then(post => {
-		  	if (post.marked == undefined || !post.marked)
-		  		post.marked = true;
-		  	else post.marked = false;
-		  		post.save()
-		  		.then(()=>{
-		  			console.log("Modified mark at post " + req.params.id)
-		  			res.send("success");
-		  		})
-		  		.catch((err)=>{
-		  			console.log(err)
-		  			res.send("error");
-		  		})
-		  })
-		  .catch((err)=>{
-		  	console.log(err);
-		  	res.send("404");
-		  })
-})
-
-app.post("/click", (req, res)=>{
-	if(req.body.what && req.body.os)
-	{
-		Click.find({what: req.body.what}, (err, found)=>{
-			if (!found || found.length < 1) {
-				var newClick = {
-					what: req.body.what,
-					operating_systems: [req.body.os],
-					total: 1
-				}	
-				Click.create(newClick)
-					 .then(click=>{
-					 	console.log(`Created click object ${click.what}`);
-					 	console.log(click.what, click.operating_systems[0], click.total);
-					 	res.send("success");
-					 })
-			}
-			else if (err){
-				console.log(err);
-				res.send("error");
-			}
-			else {
-				console.log(found);
-				found[0].total++;
-				found[0].operating_systems.push(req.body.os);
-				found[0].save()
-					 .then(()=>{
-					 	console.log(found[0].what, req.body.os, found[0].total);
-						res.send("success");
-					 })
-					 .catch((err)=>{
-					 	console.log(err);
-					 	res.send("error");
-					 })
-				}
-		})
-		
-	} 
-	
-	else 
-	{
-		res.send("error");
-	}
-})
-
-app.get("/clicks", isLoggedIn, (req, res)=>{
-	Click.find({})
-		 .then(clicks=>{
-		 	res.render("clicks", {clicks:clicks} );
-		 })
-})
-
-app.get("/login", isNotLoggedIn, (req, res)=>{
-	res.render("login");
-})
-
-app.post("/login", passport.authenticate("local", {
-        successRedirect: "/",
-        failureRedirect: "/login"
-    }), (req, res)=>{
-  
-})
-
-app.get("/logout", (req, res) => {
-    req.logout();
-    res.redirect("/");
-});
-
-/* * * * * *
- * GENERIC *
- * * * * * */
+app.use(mechRoutes);
 
 app.get('/404', function(req, res) {
 	res.render("404");
 });
 
-
-app.get('/:topic', function(req,res) {
-	let topic = (req.params.topic).toLowerCase();
-	if(topics.has(topic)) {
-		Thread.find({topic: topic})
-			  .sort('-date')
-			  .exec((err, foundThreads) => {
-			  	if(err) {
-			  		console.log(err);
-			  		res.redirect('/404');
-			  	}
-			  	let threads = foundThreads.reverse();
-			  	if (req.isAuthenticated() && req.user.admin)
-					res.render(topic, {topic: topic, 
-									   threads: threads, 
-									   user: req.user.username, 
-									   admin: true});
-				else res.render(topic, {topic: topic, 
-										threads: threads, 
-										user: "", 
-										admin: false});
-			  });
-	} else {
-		// Topic does not exist in the forum
-		res.redirect('/404');
-	}
-	
-});
-
-// app.get("/signup", isNotLoggedIn, (req, res)=>{
-// 	res.render("signup");
-// })
-
-// app.post("/signup", isNotLoggedIn, (req, res) => {
-    
-//     // In case someone messes with the jquery
-//     if (!req.body.password || !req.body.username){
-//         res.redirect("/signup");
-//     } else {
-//         // Generate new Waves address
-//      var newUser = {
-//         username: req.body.username,
-// 		admin: true
-//     };
-    
-  
-// 	User.register(new User(newUser), req.body.password, (err, user) => {
-//                                                 if(err){
-//                                                     var msg;
-//                                                     if (err.name === "UserExistsError") msg = "exists"
-//                                                     else msg = err
-//                                                     console.log("ERROR adding new user", msg);
-//                                                     res.redirect("/error")
-//                                                 }
-//                                                 else {
-//                                                     console.log("Created new user", user.username);
-//                                                     res.redirect("/login");
-//                                                 } 
-//                                             })    
-    
-//     }
-// });
+app.use(authRoutes);
+app.use(miscRoutes);
+app.use(forumRoutes); // forum routes have to go last because of /:topic/
 
 app.get('*', function(req, res) {
 	res.render("404");
@@ -557,100 +93,3 @@ app.get('*', function(req, res) {
 app.listen(3000, function() {
 	console.log("Starting server...");
 });
-
-
-function updateResponses(id){
-	Thread.findById(id, (err, thread) => {
-		if (err) console.log(err);
-		else {
-			thread.responses++;
-			thread.save()
-				  .then( ()=> {console.log("Incremented thread " + id)} )
-				  .catch(err => {console.log(err)} );
-		}
-	})
-}
-
-
-var getPostPriority = async function(nodeRef, array){
-	try {
-		var node = await Post.findById(nodeRef)
-	}
-	catch (err) {
-		return Promise.reject(err)
-	}
-	array.push(node);
-		// console.log(children);
-	var len = node.children.length;
-	for(var i = 0; i < len; i++){
-		await getPostPriority(node.children[i], array);
-	}
-	return array;	
-}
-
-var updatePost = async function (id, author, message){
-	Post.findById(id)
-		.then( post => {
-			post.author = author;
-			post.body = message;
-			post.save()
-				.then(()=>{
-					console.log("Updated post " + post._id);
-					//console.log(post);
-					return true;
-				})
-				.catch( (err) => {
-					throw err;
-				})
-		})
-		.catch( err => {
-			console.log("Failed to update post " + id, err)
-			return Promise.reject(err);
-		})
-}
-
-
-function isNotLoggedIn(req, res, next){
-    if (req.isAuthenticated()){
-        res.redirect("/");    
-    } 
-    else {
-        next();
-    }
-}
-
-function isLoggedIn(req, res, next){
-    if (req.isAuthenticated()){
-        next();  
-    } 
-    else {
-        res.redirect("/login");
-    }
-}
-
-function sanitizeAdmin(string){
-	var str = string.toLowerCase();
-	if (str == "admin" || str == "jamiel" || str == "jamiel rahi" || str =="ta") return false;
-	var strs = str.match(/\S+/g);
-	for (var i in strs){
-		if (strs[i]=="admin" || strs[i]=="jamiel" || strs[i]=="rahi" || strs[i]=="ta") return false
-	}
-	return true;
-}
-
-function determineSemester(){
-	// Jan -> 0
-	// Feb -> 1
-	// ...
-	// May -> 4
-	// ...
-	// Sept -> 8
-	var today = new Date();
-	var month = today.getMonth();
-	var semester;
-	if (month >= 0 && month < 4) semester = "winter";
-	else if (month >= 4 && month < 8) semester = "summer";
-	else semester = "fall";
-	
-	return semester;
-}
