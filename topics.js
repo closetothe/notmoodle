@@ -7,4 +7,4 @@
  */
 
 'use strict';
-module.exports = new Set(['mech215', 'detdb']);
+module.exports = new Set(['mech215', 'detdb', 'master']);

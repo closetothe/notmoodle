@@ -51,7 +51,7 @@ app.use(require("express-session")({
 	saveUninitialized: false
 }));
 
-console.log(process.env.s);
+// console.log(process.env.s);
 app.use(passport.initialize());
 app.use(passport.session());
 

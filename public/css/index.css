@@ -109,6 +109,10 @@ a.thread-link:active{
 	color: #fa8624;
 }
 
+.post-box p {
+	color: black;
+}
+
 a:hover {
 	text-decoration: none;
 }
@@ -120,6 +124,25 @@ a:hover {
 }
 
 
+.mech215 h1 {
+	color: black !important;
+}
+
+.mech215 h2 {
+	color: black !important;
+}
+
+.mech215 p {
+	color: black !important;
+}
+
+.mech215 li {
+	color: black !important;
+}
+
+.mech215 pre {
+	color: black !important;
+}
 
 .detdb {
 	background-color: #0e1b25;
@@ -129,8 +152,24 @@ a:hover {
   background-color: #0e1b25;
 }
 
-.detdb h1,h2,p,li {
-	color: #dae7f1 !important;
+.detdb p {
+	color: #dae7f1;
+}
+
+.detdb h1 {
+	color: #dae7f1;
+}
+
+.detdb h2 {
+	color: #dae7f1;
+}
+
+.detdb li {
+	color: #dae7f1;
+}
+
+.detdb pre {
+	color: #dae7f1;
 }
 
 .detdb .tag,th {
@@ -153,4 +192,58 @@ a:hover {
 
 .detdb .post-box a {
 	color: #878d92;
+}
+
+.masterclass {
+	background-color: #290404;
+}
+
+.masterclass input,textarea {
+  background-color: #290404;
+}
+
+.masterclass p {
+	color: #dae7f1;
+}
+
+.masterclass h1 {
+	color: #dae7f1;
+}
+
+.masterclass h2 {
+	color: #dae7f1;
+}
+
+.masterclass li {
+	color: #dae7f1;
+}
+
+.masterclass pre {
+	color: #dae7f1;
+}
+
+.masterclass .tag,th {
+	color: #b8631a !important;
+}
+
+.masterclass #editor, .ql-toolbar {
+    background-color: #290404;
+    color: #dae7f1;
+    overflow: visible;
+}
+
+.masterclass #editor .ql-editor.ql-blank::before {
+    color: #dae7f1 !important;
+}
+
+.masterclass #editor svg {
+	fill: #dae7f1 !important;
+}
+
+.masterclass .post-box a {
+	color: #878d92;
+}
+
+.navbar.transparent.navbar-inverse .navbar-inner {
+   background: rgba(0,0,0,0.4) !important;
 }
