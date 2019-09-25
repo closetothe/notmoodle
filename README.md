@@ -12,7 +12,7 @@ I created it for two reasons:
 During my time as a TA, it did its job. Anyone is welcome to use this for their own purposes, hence why I made it open-source.
 
 ## Update (Summer 2019)
-I now use the site to manage other open-source projects I'm working on. For example, [detdb](http://github.com/closetothe/detdb). The site essentially works like this:
+I now use the site to manage other open-source projects I'm working on. The site essentially works like this:
 
 * MECH215-specific routes. This keeps track of the year and semester, and easily be generalized to any course. For example, `/mech215/2019/winter` is handled by these routes (see `routes/mech215.js`). **I can implement a generalized-course version by request.**
 * Generic forum routes. Any forum could be created under a `topic`. The route to this forum is the topic name. For example, `/detdb`. These forums have no year or semester, and can easily be added by appending their name to the `topics` list and creating a slightly different nav bar and index.
