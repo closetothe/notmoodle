@@ -72,7 +72,7 @@ mongoose.connect("mongodb://localhost/notmoodle", { useNewUrlParser: true });
 // Declare routes (careful with the order)
 
 app.get('/', function(req,res) {
-	res.redirect('/mech215/2019/winter');
+	res.redirect('/mech215/2019/fall');
 })
 
 app.use(mechRoutes);
